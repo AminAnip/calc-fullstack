@@ -18,64 +18,55 @@ def analyze_image(img: Image, dict_of_vars: dict):
         f"(3 * 4) => 12, 2 + 12 = 14. "
         f"Q. 2 + 3 + 5 * 4 - 8 / 2 "
         f"5 * 4 => 20, 8 / 2 => 4, 2 + 3 => 5, 5 + 20 => 25, 25 - 4 => 21. "
-        f"YOU CAN HAVE FIVE TYPES OF EQUATIONS/EXPRESSIONS IN THIS IMAGE, AND ONLY ONE CASE SHALL APPLY EVERY TIME: "
-        f"Following are the cases: "
-        f"1. Simple mathematical expressions like 2 + 2, 3 * 4, 5 / 6, 7 - 8, etc.: In this case, solve and return the answer in the format of a LIST OF ONE DICT [{{'expr': given expression, 'result': calculated answer}}]. "
-        f"2. Set of Equations like x^2 + 2x + 1 = 0, 3y + 4x = 0, 5x^2 + 6y + 7 = 12, etc.: In this case, solve for the given variable, and the format should be a COMMA SEPARATED LIST OF DICTS, with dict 1 as {{'expr': 'x', 'result': 2, 'assign': True}} and dict 2 as {{'expr': 'y', 'result': 5, 'assign': True}}. This example assumes x was calculated as 2, and y as 5. Include as many dicts as there are variables. "
-        f"3. Assigning values to variables like x = 4, y = 5, z = 6, etc.: In this case, assign values to variables and return another key in the dict called {{'assign': True}}, keeping the variable as 'expr' and the value as 'result' in the original dictionary. RETURN AS A LIST OF DICTS. "
-        f"4. Analyzing Graphical Math problems, which are word problems represented in drawing form, such as cars colliding, trigonometric problems, problems on the Pythagorean theorem, adding runs from a cricket wagon wheel, etc. These will have a drawing representing some scenario and accompanying information with the image. PAY CLOSE ATTENTION TO DIFFERENT COLORS FOR THESE PROBLEMS. You need to return the answer in the format of a LIST OF ONE DICT [{{'expr': given expression, 'result': calculated answer}}]. "
-        f"5. Detecting Abstract Concepts that a drawing might show, such as love, hate, jealousy, patriotism, or a historic reference to war, invention, discovery, quote, etc. USE THE SAME FORMAT AS OTHERS TO RETURN THE ANSWER, where 'expr' will be the explanation of the drawing, and 'result' will be the abstract concept. "
-        f"Analyze the equation or expression in this image and return the answer according to the given rules: "
-        f"Make sure to use extra backslashes for escape characters like \\f -> \\\\f, \\n -> \\\\n, etc. "
-        f"Here is a dictionary of user-assigned variables. If the given expression has any of these variables, use its actual value from this dictionary accordingly: {dict_of_vars_str}. "
-        f"DO NOT USE BACKTICKS OR MARKDOWN FORMATTING. "
-        f"RETURN ONLY A VALID PYTHON LIST OF DICTIONARIES. NO EXTRA TEXT OR EXPLANATIONS. "
-        f"PROPERLY QUOTE THE KEYS AND VALUES IN THE DICTIONARY FOR EASIER PARSING WITH Python's ast.literal_eval."
+        f"YOU CAN HAVE SIX TYPES OF EQUATIONS/EXPRESSIONS IN THIS IMAGE, AND ONLY ONE CASE SHALL APPLY EVERY TIME: "
+        f"Cases: "
+        f"1. Simple math expressions (e.g. 2 + 2, 3 * 4): Return: [{{'expr': expression, 'result': result}}] "
+        f"2. Set of equations (e.g. 3y + 4x = 0): Return each variable result: [{{'expr': 'x', 'result': val, 'assign': True}}, ...] "
+        f"3. Assignments (e.g. x = 4): Return: [{{'expr': 'x', 'result': 4, 'assign': True}}, ...] "
+        f"4. Graphical math problems (e.g. diagrams, geometry): Return: [{{'expr': description, 'result': solution}}] "
+        f"5. Abstract/drawing interpretation (e.g. love, patriotism): Return: [{{'expr': description, 'result': concept}}] "
+        f"6. Matrix-based expressions: These include matrix addition, subtraction, multiplication, trace (sum of diagonal elements), transpose (flip rows/columns), and determinant calculation. "
+        f"For example: "
+        f"Matrix Addition: A = [[1,2],[3,4]], B = [[5,6],[7,8]] => A + B = [[6,8],[10,12]] "
+        f"Matrix Subtraction: A - B = [[-4,-4],[-4,-4]] "
+        f"Matrix Multiplication: A * B = [[19,22],[43,50]] "
+        f"Matrix Transpose: transpose([[1,2,3],[4,5,6]]) = [[1,4],[2,5],[3,6]] "
+        f"Matrix Trace: trace([[1,0],[0,2]]) = 3 "
+        f"Matrix Determinant: det([[1,2],[3,4]]) = -2 "
+        f"Return: [{{'expr': 'A + B', 'result': [[6,8],[10,12]], 'assign': False}}] or similar. "
+        f"Here is a dictionary of user-assigned variables. If the expression uses any of these, replace them accordingly: {dict_of_vars_str}. "
+        f"DO NOT USE BACKTICKS OR MARKDOWN. RETURN ONLY A VALID PYTHON LIST OF DICTS. NO EXTRA TEXT."
     )
     
     try:
         response = model.generate_content([prompt, img])
         print("Raw Gemini response:", response.text)
         
-        # Clean the response text - remove markdown formatting
         response_text = response.text.strip()
-        
-        # Remove markdown code blocks if present
         response_text = re.sub(r'```json\s*', '', response_text)
         response_text = re.sub(r'```\s*', '', response_text)
-        response_text = response_text.strip()
         
         print("Cleaned response text:", response_text)
         
-        # Try to parse with ast.literal_eval first
         answers = []
         try:
             answers = ast.literal_eval(response_text)
             print("Successfully parsed with ast.literal_eval")
         except (ValueError, SyntaxError) as e:
             print(f"Error parsing with ast.literal_eval: {e}")
-            # Try to parse as JSON if ast fails
             try:
                 answers = json.loads(response_text)
                 print("Successfully parsed with JSON")
             except json.JSONDecodeError as json_e:
                 print(f"Error parsing with JSON: {json_e}")
-                # Return a default response if parsing fails
                 answers = [{"expr": "Error parsing response", "result": "Unable to process image", "assign": False}]
         
-        print('Parsed answers:', answers)
-        
-        # Ensure answers is a list
         if not isinstance(answers, list):
             answers = [answers]
         
-        # Process each answer to ensure it has the assign key
         for answer in answers:
-            if isinstance(answer, dict):
-                if 'assign' not in answer:
-                    answer['assign'] = False
-            else:
-                print(f"Warning: Expected dict but got {type(answer)}: {answer}")
+            if isinstance(answer, dict) and 'assign' not in answer:
+                answer['assign'] = False
         
         return answers
         
