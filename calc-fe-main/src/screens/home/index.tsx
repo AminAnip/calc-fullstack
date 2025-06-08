@@ -94,10 +94,6 @@ export default function Home() {
     }
   };
 
-  const removeLatex = (index: number) => {
-    setLatexExpression((prev) => prev.filter((_, i) => i !== index));
-  };
-
   const resetCanvas = () => {
     const canvas = canvasRef.current;
     if (canvas) {
