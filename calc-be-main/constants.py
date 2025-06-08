@@ -1,6 +1,10 @@
+from dotenv import load_dotenv
 import os
+load_dotenv()
 
-# Use default values only for local development
-SERVER_URL = os.getenv("SERVER_URL", "0.0.0.0")
-PORT = os.getenv("PORT", "10000")  # Any default is fine locally
+# Use 0.0.0.0 for production, localhost for development
+SERVER_URL = os.getenv("HOST", "0.0.0.0")
+PORT = os.getenv("PORT", "8900")
 ENV = os.getenv("ENV", "dev")
+
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
