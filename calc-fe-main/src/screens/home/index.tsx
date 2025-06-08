@@ -292,12 +292,6 @@ export default function Home() {
           >
             <div className="absolute bg-black/80 p-3 text-white rounded shadow-lg animate-fadeIn max-w-xs text-sm backdrop-blur-sm">
               <div className="latex-content">{latex}</div>
-              <button
-                onClick={() => removeLatex(index)}
-                className="text-xs text-red-400 mt-2"
-              >
-                Remove
-              </button>
             </div>
           </Draggable>
         ))}
