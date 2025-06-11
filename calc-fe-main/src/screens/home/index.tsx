@@ -22,7 +22,7 @@ export default function Home() {
   const [isDrawing, setIsDrawing] = useState(false);
   const [color, setColor] = useState('rgb(255, 255, 255)');
   const [reset, setReset] = useState(false);
-  const [dictOfVars, setDictOfVars] = useState({});
+  const [dictOfVars, setDictOfVars] = useState<Record<string, string>>({});
   const [result, setResult] = useState<GeneratedResult>();
   const [latexPosition, setLatexPosition] = useState({ x: 10, y: 200 });
   const [latexExpression, setLatexExpression] = useState<Array<string>>([]);
@@ -230,7 +230,7 @@ export default function Home() {
       console.log('Response', resp);
       
       // Batch state updates for better performance
-      const newVars = { ...dictOfVars };
+      const newVars: Record<string, string> = { ...dictOfVars };
       resp.data.forEach((data: Response) => {
         if (data.assign === true) {
           newVars[data.expr] = data.result;
