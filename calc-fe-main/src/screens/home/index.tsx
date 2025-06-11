@@ -247,32 +247,29 @@ export default function Home() {
 
   return (
     <>
-      {/* Mobile-optimized toolbar */}
-      <div className="fixed top-2 left-2 right-2 z-30 bg-black/90 backdrop-blur-sm rounded-xl shadow-lg border border-white/10">
-        {/* Main toolbar */}
-        <div className="flex items-center justify-between p-3 gap-2">
+      {/* Compact mobile toolbar */}
+      <div className="fixed top-1 left-1 right-1 z-30 bg-black/90 backdrop-blur-sm rounded-lg shadow-lg border border-white/10">
+        {/* Main toolbar - compact layout */}
+        <div className="flex items-center justify-between px-2 py-2 gap-1">
           <Button
             onClick={() => setReset(true)}
-            className="bg-white text-black hover:bg-gray-200 text-sm px-3 py-2 rounded-lg font-medium"
+            className="bg-white text-black hover:bg-gray-200 text-xs px-2 py-1 rounded font-medium flex-shrink-0"
             disabled={isLoading}
           >
             Reset
           </Button>
 
-          {/* Color picker toggle for mobile */}
-          <div className="flex items-center gap-2">
-            <div className="md:hidden">
-              <Button
-                onClick={() => setShowColorPicker(!showColorPicker)}
-                className="bg-white/10 text-white hover:bg-white/20 text-sm px-3 py-2 rounded-lg border border-white/20"
-              >
-                Colors
-              </Button>
-            </div>
+          {/* Current color indicator + toggle */}
+          <div className="flex items-center gap-1">
+            <div 
+              className="w-6 h-6 rounded border-2 border-white cursor-pointer flex-shrink-0"
+              style={{ backgroundColor: color }}
+              onClick={() => setShowColorPicker(!showColorPicker)}
+            />
             
-            {/* Desktop color swatches */}
-            <div className="hidden md:flex gap-1">
-              {SWATCHES.map((swatch) => (
+            {/* Desktop only - compact color swatches */}
+            <div className="hidden sm:flex gap-1 ml-1">
+              {SWATCHES.slice(0, 4).map((swatch) => (
                 <ColorSwatch
                   key={swatch}
                   color={swatch}
@@ -280,8 +277,8 @@ export default function Home() {
                   style={{
                     border: color === swatch ? '2px solid white' : '1px solid rgba(255,255,255,0.2)',
                     cursor: 'pointer',
-                    width: '24px',
-                    height: '24px',
+                    width: '20px',
+                    height: '20px',
                   }}
                 />
               ))}
@@ -290,17 +287,17 @@ export default function Home() {
 
           <Button
             onClick={runRoute}
-            className="bg-blue-600 text-white hover:bg-blue-700 text-sm px-4 py-2 rounded-lg font-medium disabled:opacity-50"
+            className="bg-blue-600 text-white hover:bg-blue-700 text-xs px-2 py-1 rounded font-medium disabled:opacity-50 flex-shrink-0"
             disabled={isLoading}
           >
-            {isLoading ? 'Processing...' : 'Calculate'}
+            {isLoading ? 'Wait...' : 'Run'}
           </Button>
         </div>
 
         {/* Mobile color picker dropdown */}
         {showColorPicker && (
-          <div className="md:hidden border-t border-white/10 p-3">
-            <div className="grid grid-cols-6 gap-2">
+          <div className="border-t border-white/10 p-2">
+            <div className="grid grid-cols-8 gap-1">
               {SWATCHES.map((swatch) => (
                 <ColorSwatch
                   key={swatch}
@@ -312,8 +309,8 @@ export default function Home() {
                   style={{
                     border: color === swatch ? '2px solid white' : '1px solid rgba(255,255,255,0.2)',
                     cursor: 'pointer',
-                    width: '32px',
-                    height: '32px',
+                    width: '24px',
+                    height: '24px',
                     margin: '0 auto',
                   }}
                 />
