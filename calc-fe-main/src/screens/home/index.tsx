@@ -247,49 +247,71 @@ export default function Home() {
 
   return (
     <>
-      {/* Ultra-compact mobile toolbar */}
-      <div className="fixed top-0 left-0 right-0 z-30 bg-black/90 backdrop-blur-sm border-b border-white/10 safe-area-inset-top">
-        {/* Main toolbar - minimal layout */}
-        <div className="flex items-center justify-between px-1 py-1">
-          <button
+      {/* Compact mobile toolbar */}
+      <div className="fixed top-1 left-1 right-1 z-30 bg-black/90 backdrop-blur-sm rounded-lg shadow-lg border border-white/10">
+        {/* Main toolbar - compact layout */}
+        <div className="flex items-center justify-between px-2 py-2 gap-1">
+          <Button
             onClick={() => setReset(true)}
-            className="bg-white text-black text-xs px-2 py-1 rounded font-medium min-w-0 flex-shrink-0"
+            className="bg-white text-black hover:bg-gray-200 text-xs px-2 py-1 rounded font-medium flex-shrink-0"
             disabled={isLoading}
           >
             Reset
-          </button>
+          </Button>
 
-          {/* Current color indicator */}
-          <div 
-            className="w-5 h-5 rounded border border-white cursor-pointer flex-shrink-0 mx-1"
-            style={{ backgroundColor: color }}
-            onClick={() => setShowColorPicker(!showColorPicker)}
-          />
+          {/* Current color indicator + toggle */}
+          <div className="flex items-center gap-1">
+            <div 
+              className="w-6 h-6 rounded border-2 border-white cursor-pointer flex-shrink-0"
+              style={{ backgroundColor: color }}
+              onClick={() => setShowColorPicker(!showColorPicker)}
+            />
+            
+            {/* Desktop only - compact color swatches */}
+            <div className="hidden sm:flex gap-1 ml-1">
+              {SWATCHES.slice(0, 4).map((swatch) => (
+                <ColorSwatch
+                  key={swatch}
+                  color={swatch}
+                  onClick={() => setColor(swatch)}
+                  style={{
+                    border: color === swatch ? '2px solid white' : '1px solid rgba(255,255,255,0.2)',
+                    cursor: 'pointer',
+                    width: '20px',
+                    height: '20px',
+                  }}
+                />
+              ))}
+            </div>
+          </div>
 
-          <button
+          <Button
             onClick={runRoute}
-            className="bg-blue-600 text-white text-xs px-2 py-1 rounded font-medium disabled:opacity-50 min-w-0 flex-shrink-0"
+            className="bg-blue-600 text-white hover:bg-blue-700 text-xs px-2 py-1 rounded font-medium disabled:opacity-50 flex-shrink-0"
             disabled={isLoading}
           >
-            {isLoading ? '...' : 'Run'}
-          </button>
+            {isLoading ? 'Wait...' : 'Run'}
+          </Button>
         </div>
 
-        {/* Mobile color picker - full width overlay */}
+        {/* Mobile color picker dropdown */}
         {showColorPicker && (
-          <div className="absolute top-full left-0 right-0 bg-black/95 backdrop-blur-sm border-b border-white/10 p-2 z-40">
-            <div className="grid grid-cols-10 gap-1 max-w-full">
+          <div className="border-t border-white/10 p-2">
+            <div className="grid grid-cols-8 gap-1">
               {SWATCHES.map((swatch) => (
-                <div
+                <ColorSwatch
                   key={swatch}
-                  className="w-6 h-6 rounded cursor-pointer mx-auto"
-                  style={{ 
-                    backgroundColor: swatch,
-                    border: color === swatch ? '2px solid white' : '1px solid rgba(255,255,255,0.2)'
-                  }}
+                  color={swatch}
                   onClick={() => {
                     setColor(swatch);
                     setShowColorPicker(false);
+                  }}
+                  style={{
+                    border: color === swatch ? '2px solid white' : '1px solid rgba(255,255,255,0.2)',
+                    cursor: 'pointer',
+                    width: '24px',
+                    height: '24px',
+                    margin: '0 auto',
                   }}
                 />
               ))}
